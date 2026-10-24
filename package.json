@@ -1,6 +1,6 @@
 {
   "name": "dsh-cognitive-library",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Cognitive Library — a local plain-Markdown knowledge base for DeepSeek Harness: turn a chat, an article or a passage into a filed article or card, with a relation graph.",
   "type": "module",
   "license": "MIT",
@@ -23,6 +23,7 @@
   ],
   "exports": {
     ".": "./index.js",
+    "./client": "./client.js",
     "./store": "./lib/store.js",
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg",
@@ -33,6 +34,7 @@
   },
   "files": [
     "index.js",
+    "client.js",
     "lib",
     "bin",
     "skills",
@@ -45,6 +47,14 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-locale"
+      ]
     }
   },
   "engines": {

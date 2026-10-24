@@ -16,9 +16,10 @@ import { fileURLToPath } from 'node:url';
 import z from '@deepseek-ai/schemastery';
 import { defineTool } from '@deepseek-ai/dsh-tools';
 import * as store from './lib/store.js';
+import { buildViewData, readEntry } from './lib/view-data.js';
 
 export const name = 'cognitive-library';
-export const inject = ['tools', 'skills'];
+export const inject = ['tools', 'skills', 'webServer'];
 
 export const Config = z.object({
   root: z.string().default(''),
@@ -44,8 +45,8 @@ export function apply(ctx, config = {}) {
   ctx.tools.register(defineTool({
     name: 'cognitive_save',
     description:
-      '保存一条认知到本地知识库（cognitive-library）。文章与卡片是平级的两类，短到成不了文的内容存成 card，' +
-      '不要为了保存而把文章拆成卡片。分类必须已存在；若没有合适的分类，先问用户要不要新建，再用 cognitive_category add。',
+      '保存一条认知到本地知识库（cognitive-library）。先判断内容能否独立成篇：能就存 article，不能就存 card；' +
+      '篇幅不是标准，完整度才是。分类必须已存在；若没有合适的分类，先问用户要不要新建，再用 cognitive_category add。',
     parameters: {
       title: { type: 'string', required: true, description: '标题，一句话说清这条认知是什么' },
       body: { type: 'string', required: true, description: 'Markdown 正文' },
@@ -314,4 +315,62 @@ export function apply(ctx, config = {}) {
     },
   };
   ctx.skills.registerProvider(() => provider);
+
+  // ---- HTTP routes for the main-panel UI ----
+  // Local-only JSON endpoints: the client panel fetches these instead of needing
+  // a Remote/typert descriptor. Every payload is derived from the library root.
+  const routes = [
+    {
+      kind: 'exact',
+      path: '/api/cognitive-library/index',
+      handler: async (req, res) => {
+        if (!isLoopback(req)) return deny(res);
+        try {
+          writeJson(res, 200, await buildViewData(root()));
+        } catch (error) {
+          writeJson(res, 500, { error: String(error && error.message ? error.message : error) });
+        }
+      },
+    },
+    {
+      kind: 'exact',
+      path: '/api/cognitive-library/entry',
+      handler: async (req, res) => {
+        if (!isLoopback(req)) return deny(res);
+        try {
+          const id = new URL(req.url ?? '', 'http://localhost').searchParams.get('id') ?? '';
+          const entry = await readEntry(root(), id);
+          if (!entry) return writeJson(res, 404, { error: 'entry not found' });
+          writeJson(res, 200, entry);
+        } catch (error) {
+          writeJson(res, 500, { error: String(error && error.message ? error.message : error) });
+        }
+      },
+    },
+  ];
+  ctx.effect(() => {
+    const disposers = routes.map((route) => ctx.webServer.register(route));
+    return () => {
+      for (const dispose of disposers) dispose();
+    };
+  }, 'cognitive-library: http routes');
+}
+
+function isLoopback(req) {
+  const address = req.socket && req.socket.remoteAddress;
+  return address === '127.0.0.1' || address === '::1' || address === '::ffff:127.0.0.1';
+}
+
+function deny(res) {
+  writeJson(res, 403, { error: 'loopback only' });
+}
+
+function writeJson(res, status, payload) {
+  const body = JSON.stringify(payload);
+  res.writeHead(status, {
+    'content-type': 'application/json; charset=utf-8',
+    'cache-control': 'no-store',
+    'content-length': Buffer.byteLength(body),
+  });
+  res.end(body);
 }

@@ -67,6 +67,16 @@ node bin/cogni.js reindex
 
 `bin/cogni.js` 不依赖 DSH 运行时，可以给别的 agent、脚本或定时任务用。
 
+## 在 Harness 里阅读
+
+插件装好后，左侧栏会多一个「认知库」按钮，点开是主面板：
+
+- 左栏：按分类列出条目，顶部可搜索标题 / 摘要 / 标签
+- 右栏：阅读区，文章按 Markdown 渲染
+
+面板通过两个仅本机可访问的 HTTP 路由取数据（`/api/cognitive-library/index`、`/entry`），
+数据直接来自库目录，不维护第二份副本——改了 Markdown，刷新面板就能看到。
+
 ## 工具
 
 | 工具 | 作用 |
