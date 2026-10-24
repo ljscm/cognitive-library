@@ -42,6 +42,7 @@
     "icon.svg",
     "cordis.patch.yml",
     "README.md",
+    "CONTRIBUTING.md",
     "LICENSE"
   ],
   "dsh": {
@@ -65,6 +66,7 @@
     "@deepseek-ai/schemastery": "*"
   },
   "scripts": {
-    "test": "node --test test/"
+    "test": "node test/store.test.js",
+    "check": "node --check index.js && node --check client.js && node --check lib/store.js && node --check lib/view-data.js"
   }
 }
