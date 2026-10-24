@@ -38,17 +38,51 @@
 
 ## 安装
 
-### 方式一：插件（推荐）
+需要 DSH `>= 0.2.1-rc.1`，并且 profile 里启用了 `plugin_manager` 工具。
+
+### 方式一：从 npm 安装（发布后）
 
 ```bash
 # 在 DSH 的 profile 目录
-pnpm add /绝对路径/cognitive-library
+pnpm add dsh-cognitive-library
 ```
 
-然后在 profile 的 `package.json` 的 `dsh.profile.bundles` 里追加 `"dsh-cognitive-library"`，重启 DSH。
-插件会注册 6 个工具和一个技能。
+然后把 `"dsh-cognitive-library"` 追加到 profile `package.json` 的 `dsh.profile.bundles`，重启 DSH。
+装了 DSH 插件管理器的话，直接让它装包名即可：
 
-### 方式二：只装技能，不装插件
+```
+plugin_manager install_bundle dsh-cognitive-library
+```
+
+### 方式二：从 GitHub 安装（现在就能用）
+
+```bash
+git clone https://github.com/ljscm/cognitive-library
+```
+
+然后把**克隆目录的绝对路径**交给插件管理器：
+
+```
+plugin_manager install_bundle /path/to/cognitive-library
+```
+
+插件注册 6 个工具、一个技能，以及左侧栏的「认知库」主面板。
+
+### 库放在哪
+
+默认 `$DSH_HOME/cognitive-library`（即 `~/.dsh/cognitive-library`）。
+要换位置，在你的 profile `cordis.patch.yml` 里覆盖这一行，不要改插件包里的补丁：
+
+```yaml
+- id: cognitive-library
+  name: dsh-cognitive-library
+  config:
+    root: 'D:\你的\路径'
+```
+
+环境变量 `COGNITIVE_LIBRARY_HOME` 优先级更高。
+
+### 方式三：只装技能，不装插件
 
 把 `skills/cognitive-library/` 整个目录复制到：
 
@@ -57,7 +91,7 @@ pnpm add /绝对路径/cognitive-library
 
 技能会让模型直接读写 Markdown（结构一致），不需要工具。
 
-### 方式三：只用命令行
+### 方式四：只用命令行
 
 ```bash
 node bin/cogni.js list

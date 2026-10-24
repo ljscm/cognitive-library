@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1 — 2026-10-24
+
+可移植性。
+
+- 插件包里的 `cordis.patch.yml` 不再写死本机库路径，默认 `$DSH_HOME/cognitive-library`
+- 本机自定义路径改由 profile 补丁层覆盖
+- README 补充 npm / GitHub / 纯技能 / CLI 四种安装方式
+
 ## 0.2.0 — 2026-10-24
 
 主面板阅读器。

@@ -1,5 +1,4 @@
 - insert:
     - id: cognitive-library
       name: dsh-cognitive-library
-      config:
-        root: 'C:\Users\m\Documents\认知库'
+      config: {}
