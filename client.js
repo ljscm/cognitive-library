@@ -30,16 +30,19 @@ window.__ModuleLoader__.load({
     };
 
     function Icon(props) {
+      const size = typeof props.size === 'number' && props.size > 0 ? props.size : 18;
       return h(
         'svg',
         {
           viewBox: '0 0 20 20',
-          width: props.size || 18,
-          height: props.size || 18,
+          width: size,
+          height: size,
           fill: 'none',
           stroke: 'currentColor',
-          strokeWidth: 1.6,
+          strokeWidth: size <= 16 ? 1.4 : 1.6,
           strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          style: { display: 'block' },
           'aria-hidden': true,
         },
         h('circle', { cx: 6, cy: 6, r: 2.2 }),
@@ -285,8 +288,9 @@ window.__ModuleLoader__.load({
       );
     }
 
-    function EntryButton() {
-      return h('div', { style: { display: 'grid', placeItems: 'center', width: 32, height: 32 } }, h(Icon, null));
+    /** The sidebar passes its requested edge as `size`; wrapper boxes break row alignment. */
+    function EntryButton({ size }) {
+      return h(Icon, { size });
     }
 
     return {
