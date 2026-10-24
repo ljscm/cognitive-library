@@ -1,0 +1,60 @@
+{
+  "name": "dsh-cognitive-library",
+  "version": "0.1.0",
+  "description": "Cognitive Library — a local plain-Markdown knowledge base for DeepSeek Harness: turn a chat, an article or a passage into a filed article or card, with a relation graph.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ljscm/cognitive-library.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ljscm/cognitive-library/issues"
+  },
+  "homepage": "https://github.com/ljscm/cognitive-library#readme",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "knowledge-base",
+    "notes",
+    "markdown",
+    "summarize"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./store": "./lib/store.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "cogni": "./bin/cogni.js"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "bin",
+    "skills",
+    "locale",
+    "icon.svg",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "dsh": ">=0.2.1-rc.1 <0.3.0-0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "*",
+    "@deepseek-ai/schemastery": "*"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  }
+}

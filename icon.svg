@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Cognitive Library">
+  <rect x="1" y="1" width="62" height="62" rx="14" fill="#1f2937"/>
+  <g stroke="#93c5fd" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <path d="M20 22 L44 18"/>
+    <path d="M20 22 L28 44"/>
+    <path d="M44 18 L49 40"/>
+    <path d="M28 44 L49 40"/>
+  </g>
+  <g fill="#e5e7eb">
+    <circle cx="20" cy="22" r="5"/>
+    <circle cx="44" cy="18" r="4"/>
+    <circle cx="28" cy="44" r="4.5"/>
+    <circle cx="49" cy="40" r="4"/>
+  </g>
+</svg>
