@@ -4,7 +4,7 @@
 
 第一个可用版本。
 
-- 卡片（card）与文章（article）两类条目，平级存放，不做拆解
+- 卡片（card）与文章（article）两类条目；存哪一类由模型按内容能否独立成篇判断
 - 受控分类：默认政治 / 经济 / 科技 / 心理 / 生活，新增需用户确认
 - `index.md` 按分类重建，`graph.md` 输出 Mermaid 关系图与关联列表
 - 6 个 Host 工具：save / list / search / relate / category / reindex
