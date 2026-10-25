@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.2 — 2026-10-25
+
+- 修根因：`@deepseek-ai/dsh-llm` 没写进 peerDependencies，profile 插件解析不到该导入，fiber 停在 `null`（整个 Host 半边不启动，路由全部 401）
+- 模型路由改为读 `agentDefaultModel.currentSelection()`，不再传空 provider（原先报 `no adapter registered for provider "undefined"`）
+- `node:zlib` 的 zstd 改为惰性解析：运行时不支持 zstd 只影响会话整理，不会拖垮插件加载
+- 输出上限 4096 → 8192，长会话约束正文 1500 字；JSON 解析失败时回传尾部片段便于定位
+- 实测：选区整理 200，卡片入库；整段会话整理 200（73 轮、20.9s），文章入库
+
 ## 0.3.1 — 2026-10-25
 
 - 修复 `package.json` 写入带 BOM 导致插件清单不可读（客户端模块因此完全不加载）

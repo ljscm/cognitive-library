@@ -21,7 +21,19 @@ import { digestText } from './lib/digest.js';
 import { readSessionTranscript } from './lib/session-log.js';
 
 export const name = 'cognitive-library';
-export const inject = ['tools', 'skills', 'webServer', 'llm'];
+export const inject = ['tools', 'skills', 'webServer', 'llm', 'agentDefaultModel'];
+
+/** Route the digest call at the profile's default model unless configured. */
+function digestRoute(ctx, config) {
+  if (config.provider && config.model) return { provider: config.provider, model: config.model };
+  try {
+    const selection = ctx.agentDefaultModel?.currentSelection?.();
+    if (selection?.provider && selection?.model) return { provider: selection.provider, model: selection.model };
+  } catch {
+    // fall through: the caller reports a missing adapter clearly enough
+  }
+  return { provider: config.provider || '', model: config.model || '' };
+}
 
 export const Config = z.object({
   root: z.string().default(''),
@@ -363,7 +375,7 @@ export function apply(ctx, config = {}) {
             ctx,
             root(),
             { text: body.text, source: body.source ?? { kind: 'chat', ref: 'selection' } },
-            { provider: config.provider, model: config.model },
+            digestRoute(ctx, config),
           );
           writeJson(res, 200, result);
         } catch (error) {
@@ -387,7 +399,7 @@ export function apply(ctx, config = {}) {
               text: transcript.text,
               source: { kind: 'chat', ref: `session:${body.sessionId}${transcript.truncated ? '（截断）' : ''}` },
             },
-            { provider: config.provider, model: config.model },
+            digestRoute(ctx, config),
           );
           writeJson(res, 200, { ...result, truncated: transcript.truncated, turns: transcript.turns });
         } catch (error) {
