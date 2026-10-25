@@ -29,26 +29,31 @@ window.__ModuleLoader__.load({
       accent: 'var(--dsw-alias-accent, #2563eb)',
     };
 
+    /**
+     * A tight 16x16 glyph: the previous 20x20 canvas left the artwork at ~65% of
+     * the box, so at 16px it read as smaller and shifted right next to host
+     * icons. Stroke matches the host outline weight (1.5).
+     */
     function Icon(props) {
       const size = typeof props.size === 'number' && props.size > 0 ? props.size : 18;
       return h(
         'svg',
         {
-          viewBox: '0 0 20 20',
+          viewBox: '0 0 16 16',
           width: size,
           height: size,
           fill: 'none',
           stroke: 'currentColor',
-          strokeWidth: size <= 16 ? 1.4 : 1.6,
+          strokeWidth: 1.5,
           strokeLinecap: 'round',
           strokeLinejoin: 'round',
-          style: { display: 'block' },
+          style: { display: 'block', overflow: 'visible' },
           'aria-hidden': true,
         },
-        h('circle', { cx: 6, cy: 6, r: 2.2 }),
-        h('circle', { cx: 15, cy: 9, r: 2 }),
-        h('circle', { cx: 9, cy: 15, r: 2 }),
-        h('path', { d: 'M7.8 7.2 L13.2 8.4 M7.2 8 L8.2 12.9 M13.8 10.6 L10.6 13.8' }),
+        h('circle', { cx: 4.7, cy: 4.7, r: 2.1 }),
+        h('circle', { cx: 11.3, cy: 6.3, r: 1.9 }),
+        h('circle', { cx: 6.5, cy: 11.7, r: 1.9 }),
+        h('path', { d: 'M6.3 5.6 L9.4 6.0 M5.5 6.6 L6.0 9.8 M10.7 8.1 L8.3 10.3' }),
       );
     }
 
@@ -486,11 +491,11 @@ window.__ModuleLoader__.load({
           style: {
             display: 'flex',
             alignItems: 'center',
-            gap: 10,
+            gap: 8,
             width: '100%',
             minHeight: 36,
             boxSizing: 'border-box',
-            padding: '6px 10px',
+            padding: '6px 8px',
             margin: 0,
             border: 'none',
             borderRadius: 6,
