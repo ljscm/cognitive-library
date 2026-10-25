@@ -18,6 +18,7 @@ import { defineTool } from '@deepseek-ai/dsh-tools';
 import * as store from './lib/store.js';
 import { buildViewData, readEntry } from './lib/view-data.js';
 import { digestText } from './lib/digest.js';
+import { readSessionTranscript } from './lib/session-log.js';
 
 export const name = 'cognitive-library';
 export const inject = ['tools', 'skills', 'webServer', 'llm'];
@@ -365,6 +366,30 @@ export function apply(ctx, config = {}) {
             { provider: config.provider, model: config.model },
           );
           writeJson(res, 200, result);
+        } catch (error) {
+          writeJson(res, 500, { error: String(error && error.message ? error.message : error) });
+        }
+      },
+    },
+    {
+      kind: 'exact',
+      path: '/api/cognitive-library/digest-session',
+      handler: async (req, res) => {
+        if (!isLoopback(req)) return deny(res);
+        if (req.method !== 'POST') return writeJson(res, 405, { error: 'POST only' });
+        try {
+          const body = await readBody(req, 8_000);
+          const transcript = await readSessionTranscript(String(body.sessionId ?? ''));
+          const result = await digestText(
+            ctx,
+            root(),
+            {
+              text: transcript.text,
+              source: { kind: 'chat', ref: `session:${body.sessionId}${transcript.truncated ? '（截断）' : ''}` },
+            },
+            { provider: config.provider, model: config.model },
+          );
+          writeJson(res, 200, { ...result, truncated: transcript.truncated, turns: transcript.turns });
         } catch (error) {
           writeJson(res, 500, { error: String(error && error.message ? error.message : error) });
         }

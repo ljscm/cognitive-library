@@ -446,6 +446,60 @@ window.__ModuleLoader__.load({
       );
     }
 
+    /** A row in the session "..." menu: digest the whole conversation. */
+    function SessionMenuRow({ sessionId, useMenuOpenState }) {
+      const [busy, setBusy] = useState(false);
+      const closeMenu = typeof useMenuOpenState === 'function' ? useMenuOpenState()[1] : null;
+
+      async function run() {
+        if (closeMenu) closeMenu(false);
+        setBusy(true);
+        notify('正在整理这个会话…');
+        try {
+          const response = await fetch('/api/cognitive-library/digest-session', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ sessionId }),
+          });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+          const kind = payload.type === 'article' ? '文章' : '卡片';
+          const hint = payload.suggestedCategory ? `（建议新建分类「${payload.suggestedCategory}」）` : '';
+          notify(`已存入认知库：${kind}《${payload.title}》· ${payload.category}${hint}`);
+        } catch (error) {
+          notify(`整理失败：${error.message}`, 'error');
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      return h(
+        'button',
+        {
+          type: 'button',
+          'data-cogni-ui': '1',
+          disabled: busy,
+          onClick: run,
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            width: '100%',
+            padding: '8px 12px',
+            border: 'none',
+            background: 'transparent',
+            color: 'inherit',
+            font: 'inherit',
+            textAlign: 'left',
+            cursor: 'pointer',
+            borderRadius: 6,
+          },
+        },
+        h(Icon, { size: 14 }),
+        busy ? '整理中…' : '知识整理',
+      );
+    }
+
     return {
       inject: ['slots'],
       apply(ctx) {
@@ -465,6 +519,13 @@ window.__ModuleLoader__.load({
         );
         ctx.slots.inject('shell.overlay', () =>
           ctx.slots.register({ name: 'shell.overlay', id: 'cognitive-library-selection' }, SelectionAction),
+        );
+        ctx.slots.inject('sidebar.workspaces.session.menu.item', () =>
+          ctx.slots.register({
+            name: 'sidebar.workspaces.session.menu.item',
+            id: 'cognitive-library-session-digest',
+            order: 500,
+          }, SessionMenuRow),
         );
       },
     };
