@@ -1,7 +1,7 @@
-{
+﻿{
   "name": "dsh-cognitive-library",
-  "version": "0.2.1",
-  "description": "Cognitive Library — a local plain-Markdown knowledge base for DeepSeek Harness: turn a chat, an article or a passage into a filed article or card, with a relation graph.",
+  "version": "0.3.0",
+  "description": "Cognitive Library 鈥?a local plain-Markdown knowledge base for DeepSeek Harness: turn a chat, an article or a passage into a filed article or card, with a relation graph.",
   "type": "module",
   "license": "MIT",
   "repository": {
@@ -70,3 +70,4 @@
     "check": "node --check index.js && node --check client.js && node --check lib/store.js && node --check lib/view-data.js"
   }
 }
+

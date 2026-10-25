@@ -17,13 +17,16 @@ import z from '@deepseek-ai/schemastery';
 import { defineTool } from '@deepseek-ai/dsh-tools';
 import * as store from './lib/store.js';
 import { buildViewData, readEntry } from './lib/view-data.js';
+import { digestText } from './lib/digest.js';
 
 export const name = 'cognitive-library';
-export const inject = ['tools', 'skills', 'webServer'];
+export const inject = ['tools', 'skills', 'webServer', 'llm'];
 
 export const Config = z.object({
   root: z.string().default(''),
   categories: z.array(z.string()).default(store.DEFAULT_CATEGORIES),
+  provider: z.string().default(''),
+  model: z.string().default(''),
 });
 
 const SKILL_RANK = 900; // after project/user skill roots, before bundled skills
@@ -347,6 +350,26 @@ export function apply(ctx, config = {}) {
         }
       },
     },
+    {
+      kind: 'exact',
+      path: '/api/cognitive-library/digest',
+      handler: async (req, res) => {
+        if (!isLoopback(req)) return deny(res);
+        if (req.method !== 'POST') return writeJson(res, 405, { error: 'POST only' });
+        try {
+          const body = await readBody(req, 400_000);
+          const result = await digestText(
+            ctx,
+            root(),
+            { text: body.text, source: body.source ?? { kind: 'chat', ref: 'selection' } },
+            { provider: config.provider, model: config.model },
+          );
+          writeJson(res, 200, result);
+        } catch (error) {
+          writeJson(res, 500, { error: String(error && error.message ? error.message : error) });
+        }
+      },
+    },
   ];
   ctx.effect(() => {
     const disposers = routes.map((route) => ctx.webServer.register(route));
@@ -363,6 +386,30 @@ function isLoopback(req) {
 
 function deny(res) {
   writeJson(res, 403, { error: 'loopback only' });
+}
+
+function readBody(req, limit) {
+  return new Promise((resolve, reject) => {
+    let size = 0;
+    const chunks = [];
+    req.on('data', (chunk) => {
+      size += chunk.length;
+      if (size > limit) {
+        reject(new Error('request body too large'));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on('end', () => {
+      try {
+        resolve(JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'));
+      } catch (error) {
+        reject(new Error(`invalid JSON body: ${error.message}`));
+      }
+    });
+    req.on('error', reject);
+  });
 }
 
 function writeJson(res, status, payload) {
