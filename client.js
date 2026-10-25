@@ -30,9 +30,9 @@ window.__ModuleLoader__.load({
     };
 
     /**
-     * A tight 16x16 glyph: the previous 20x20 canvas left the artwork at ~65% of
-     * the box, so at 16px it read as smaller and shifted right next to host
-     * icons. Stroke matches the host outline weight (1.5).
+     * A tight 16x16 glyph. Two earlier problems: a 20x20 canvas left the artwork
+     * at ~65% of the box (so it read small and right-shifted), and 1.5 stroke
+     * looked heavier than host icons because this shape is dense. 1.3 matches.
      */
     function Icon(props) {
       const size = typeof props.size === 'number' && props.size > 0 ? props.size : 18;
@@ -44,7 +44,7 @@ window.__ModuleLoader__.load({
           height: size,
           fill: 'none',
           stroke: 'currentColor',
-          strokeWidth: 1.5,
+          strokeWidth: 1.3,
           strokeLinecap: 'round',
           strokeLinejoin: 'round',
           style: { display: 'block', overflow: 'visible' },
@@ -483,34 +483,50 @@ window.__ModuleLoader__.load({
         'button',
         {
           type: 'button',
+          role: 'menuitem',
           'data-cogni-ui': '1',
           disabled: busy,
           onClick: run,
           onMouseEnter: () => setHover(true),
           onMouseLeave: () => setHover(false),
           style: {
+            // Mirrors the host menu item rule:
+            // min-height 40px; padding 8px 10px; gap 8px; 14px/22px; radius token.
             display: 'flex',
             alignItems: 'center',
             gap: 8,
             width: '100%',
-            minHeight: 36,
+            minHeight: 40,
             boxSizing: 'border-box',
-            padding: '6px 8px',
+            padding: '8px 10px',
             margin: 0,
             border: 'none',
-            borderRadius: 6,
-            background: hover ? 'rgba(127,127,127,0.12)' : 'transparent',
+            borderRadius: 'var(--dsw-radius-md, 8px)',
+            background: hover ? 'var(--dsw-alias-surface-hover, rgba(127,127,127,0.12))' : 'transparent',
             color: 'inherit',
             font: 'inherit',
             fontSize: 14,
-            lineHeight: '20px',
+            lineHeight: '22px',
             textAlign: 'left',
             cursor: busy ? 'default' : 'pointer',
             opacity: busy ? 0.6 : 1,
           },
         },
-        h('span', { style: { display: 'flex', flex: '0 0 auto', width: 16, height: 16, alignItems: 'center', justifyContent: 'center' } },
-          h(Icon, { size: 16 })),
+        h(
+          'span',
+          {
+            style: {
+              display: 'flex',
+              flex: '0 0 auto',
+              width: 16,
+              height: 16,
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--dsw-alias-menu-icon, currentColor)',
+            },
+          },
+          h(Icon, { size: 16 }),
+        ),
         h('span', { style: { flex: '1 1 auto' } }, busy ? '整理中…' : '知识整理'),
       );
     }
