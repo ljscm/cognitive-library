@@ -449,6 +449,7 @@ window.__ModuleLoader__.load({
     /** A row in the session "..." menu: digest the whole conversation. */
     function SessionMenuRow({ sessionId, useMenuOpenState }) {
       const [busy, setBusy] = useState(false);
+      const [hover, setHover] = useState(false);
       const closeMenu = typeof useMenuOpenState === 'function' ? useMenuOpenState()[1] : null;
 
       async function run() {
@@ -480,23 +481,32 @@ window.__ModuleLoader__.load({
           'data-cogni-ui': '1',
           disabled: busy,
           onClick: run,
+          onMouseEnter: () => setHover(true),
+          onMouseLeave: () => setHover(false),
           style: {
             display: 'flex',
             alignItems: 'center',
-            gap: 8,
+            gap: 10,
             width: '100%',
-            padding: '8px 12px',
+            minHeight: 36,
+            boxSizing: 'border-box',
+            padding: '6px 10px',
+            margin: 0,
             border: 'none',
-            background: 'transparent',
+            borderRadius: 6,
+            background: hover ? 'rgba(127,127,127,0.12)' : 'transparent',
             color: 'inherit',
             font: 'inherit',
+            fontSize: 14,
+            lineHeight: '20px',
             textAlign: 'left',
-            cursor: 'pointer',
-            borderRadius: 6,
+            cursor: busy ? 'default' : 'pointer',
+            opacity: busy ? 0.6 : 1,
           },
         },
-        h(Icon, { size: 14 }),
-        busy ? '整理中…' : '知识整理',
+        h('span', { style: { display: 'flex', flex: '0 0 auto', width: 16, height: 16, alignItems: 'center', justifyContent: 'center' } },
+          h(Icon, { size: 16 })),
+        h('span', { style: { flex: '1 1 auto' } }, busy ? '整理中…' : '知识整理'),
       );
     }
 
@@ -524,7 +534,7 @@ window.__ModuleLoader__.load({
           ctx.slots.register({
             name: 'sidebar.workspaces.session.menu.item',
             id: 'cognitive-library-session-digest',
-            order: 500,
+            order: 450,
           }, SessionMenuRow),
         );
       },
