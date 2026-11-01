@@ -11,7 +11,7 @@ import { join } from 'node:path';
 const modules = {
   '@deepseek-ai/dsh-tools': 'export const defineTool = (tool) => tool;',
   '@deepseek-ai/dsh-llm': 'export class BlockAssembler {} export function createUserMessage() { throw new Error("unexpected LLM call"); }',
-  '@deepseek-ai/schemastery': 'const field = () => ({ default() { return this; } }); export default { object: field, string: field, array: field };',
+  '@deepseek-ai/schemastery': 'const field = () => ({ default() { return this; } }); export default { object: field, string: field, array: field, boolean: field };',
 };
 const hook = registerHooks({
   resolve(specifier, context, nextResolve) {
