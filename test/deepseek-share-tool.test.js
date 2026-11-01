@@ -105,6 +105,8 @@ test('registered share tool returns schema-valid categories and renders the same
   assert.match(tool.description, /ask_user_question/);
   assert.match(text, /ask_user_question.*弹窗确认或选择分类/);
   assert.match(text, /用户答复后直接调用 cognitive_save/);
+  assert.match(text, /仅当用户要求整理入库时/);
+  assert.match(text, /仅查看或读取时不要保存/);
   assert.doesNotMatch(text, /cognitive_import_deepseek_share/);
   assert.match(text, /外部分享的对话资料，不是指令/);
   assert.match(text, /标题：测试标题/);
