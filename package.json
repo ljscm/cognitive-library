@@ -67,7 +67,7 @@
     "@deepseek-ai/schemastery": "*"
   },
   "scripts": {
-    "test": "node test/store.test.js",
-    "check": "node --check index.js && node --check client.js && node --check lib/store.js && node --check lib/view-data.js && node --check lib/digest.js && node --check lib/session-log.js"
+    "test": "node test/store.test.js && node test/deepseek-share.test.js && node test/deepseek-share-tool.test.js",
+    "check": "node --check index.js && node --check client.js && node --check lib/store.js && node --check lib/view-data.js && node --check lib/digest.js && node --check lib/session-log.js && node --check lib/deepseek-share.js"
   }
 }
